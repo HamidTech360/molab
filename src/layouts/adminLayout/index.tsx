@@ -7,7 +7,13 @@ import { ModalContent } from '../../screens/User/tasks/tasks.style'
 import { useEffect, useState } from 'react'
 import { BiBarChartSquare } from 'react-icons/bi'
 import { TbHexagon3D } from 'react-icons/tb'
-import { AiOutlineFile,  AiOutlinePlusCircle, AiOutlineClose, AiOutlineLogout } from 'react-icons/ai'
+import {
+  AiOutlineFile,
+  AiOutlinePlusCircle,
+  AiOutlineClose,
+  AiOutlineLogout,
+} from 'react-icons/ai'
+import { IoLogoDropbox } from 'react-icons/io'
 // import {apiUrl} from '../../config/index.json'
 // import axios from 'axios'
 import { NavItem, SideGrid } from './adminlayout.style'
@@ -35,96 +41,103 @@ const AdminLayout = () => {
       paths: ['/user/assets'],
       link: '/user/assets',
       icon: AiOutlineFile,
-    }
+    },
   ]
   const [isModalOpen, setIsModalOpen] = useState(false)
   const token = localStorage.getItem('token')
-   //@ts-ignore
-   const savedWorkSPaces = JSON.parse(localStorage.getItem('workspaces')) || []
-   const currentUserWorkspaces = savedWorkSPaces.filter((item:any)=>item.members.includes(owner))
+  //@ts-ignore
+  const savedWorkSPaces = JSON.parse(localStorage.getItem('workspaces')) || []
+  const currentUserWorkspaces = savedWorkSPaces.filter((item: any) =>
+    item.members.includes(owner)
+  )
   const [currentWorkSpaceIndex, setCurrentWorkSpaceIndex] = useState(0)
-  useEffect(()=>{
-    if(!token){
+  useEffect(() => {
+    if (!token) {
       return navigate('/')
     }
   }, [])
 
- 
+  const [workSpaces, setWorkSpaces] = useState(currentUserWorkspaces || [])
 
-  const [workSpaces, setWorkSpaces] =useState(currentUserWorkspaces || []) 
-
-  const handleAddTask = (task:any)=>{
+  const handleAddTask = (task: any) => {
     // let item =  {
     //   ...task,
     //   status:'inProgress'
     // }
     const workspaces_c = [...workSpaces]
-    workspaces_c[currentWorkSpaceIndex].tasks = [...workspaces_c[currentWorkSpaceIndex].tasks, task]
-    setWorkSpaces(workspaces_c)    
+    workspaces_c[currentWorkSpaceIndex].tasks = [
+      ...workspaces_c[currentWorkSpaceIndex].tasks,
+      task,
+    ]
+    setWorkSpaces(workspaces_c)
     localStorage.setItem('workspaces', JSON.stringify(workspaces_c))
   }
 
-  const handleUpdateTask = (updatedTask:any, index:any)=>{ 
-    console.log(updatedTask);
-      
-      const workspaces_c = [...workSpaces]
-      workspaces_c[currentWorkSpaceIndex].tasks[index] = updatedTask
-      setWorkSpaces(workspaces_c)
-      localStorage.setItem('workspaces', JSON.stringify(workspaces_c))
-      alert('Task status updated succesfully')
-  }
+  const handleUpdateTask = (updatedTask: any, index: any) => {
+    console.log(updatedTask)
 
-  const handleAssetUpload = (asset:any)=>{
     const workspaces_c = [...workSpaces]
-    workspaces_c[currentWorkSpaceIndex].assets = [...workspaces_c[currentWorkSpaceIndex].assets, asset]
-    setWorkSpaces(workspaces_c)    
+    workspaces_c[currentWorkSpaceIndex].tasks[index] = updatedTask
+    setWorkSpaces(workspaces_c)
+    localStorage.setItem('workspaces', JSON.stringify(workspaces_c))
+    alert('Task status updated succesfully')
+  }
+
+  const handleAssetUpload = (asset: any) => {
+    const workspaces_c = [...workSpaces]
+    workspaces_c[currentWorkSpaceIndex].assets = [
+      ...workspaces_c[currentWorkSpaceIndex].assets,
+      asset,
+    ]
+    setWorkSpaces(workspaces_c)
     localStorage.setItem('workspaces', JSON.stringify(workspaces_c))
   }
 
-  const handleDeleteAsset = (index:any)=>{
+  const handleDeleteAsset = (index: any) => {
     const workspaces_c = [...workSpaces]
     //@ts-ignore
-    let newAssets = workspaces_c[currentWorkSpaceIndex].assets?.filter((item:any, i:any)=>i!==index)
-    workspaces_c[currentWorkSpaceIndex].assets= newAssets
+    let newAssets = workspaces_c[currentWorkSpaceIndex].assets?.filter(
+      (item: any, i: any) => i !== index
+    )
+    workspaces_c[currentWorkSpaceIndex].assets = newAssets
     setWorkSpaces(workspaces_c)
     localStorage.setItem('workspaces', JSON.stringify(workspaces_c))
   }
 
   const [formData, setFormData] = useState({
-    name:'',
-    description:''
+    name: '',
+    description: '',
   })
 
-  const handleChange = (e:any)=>{
-    const formData__c = {...formData}
+  const handleChange = (e: any) => {
+    const formData__c = { ...formData }
     //@ts-ignore
     formData__c[e.currentTarget.name] = e.currentTarget.value
     setFormData(formData__c)
   }
 
-  const createNewWorkspace = ()=>{
-    
-    
+  const createNewWorkspace = () => {
     let newWorkSpace = {
       ...formData,
-      members:[owner],
-      assets:[],
-      tasks:[]
+      members: [owner],
+      assets: [],
+      tasks: [],
     }
     setWorkSpaces([...workSpaces, newWorkSpace])
-    localStorage.setItem('workspaces',JSON.stringify([...workSpaces, newWorkSpace]) )
+    localStorage.setItem(
+      'workspaces',
+      JSON.stringify([...workSpaces, newWorkSpace])
+    )
     setIsModalOpen(false)
   }
 
-
-  
-
-  
   return (
     <div className="flex" style={{ height: '100vh' }}>
       <SideGrid>
-        <div className="text-center">
-          <img src="../../assets/logo.png" alt="" />
+        <div className="text-center flex items-center justify-center">
+          {/* <img src="../../assets/logo.png" alt="" /> */}
+          <IoLogoDropbox size={45} color="#7F56D9" />
+          <span className="font-bold text-2xl text-[#7F56D9]">AGILE</span>
         </div>
         <div className="mt-10">
           {navOptions.map((item, i) => (
@@ -135,13 +148,15 @@ const AdminLayout = () => {
               </NavItem>
             </Link>
           ))}
-           <NavItem onClick={()=>{
-                localStorage.removeItem('token')
-                navigate('/')
-           }} >
-              <AiOutlineLogout size={22} className="mr-3" />
-              Logout
-            </NavItem>
+          <NavItem
+            onClick={() => {
+              localStorage.removeItem('token')
+              navigate('/')
+            }}
+          >
+            <AiOutlineLogout size={22} className="mr-3" />
+            Logout
+          </NavItem>
         </div>
       </SideGrid>
 
@@ -149,22 +164,21 @@ const AdminLayout = () => {
         className="flex-1 py-7 px-3 sm:px-10"
         style={{ overflowY: 'scroll', maxHeight: '100vh' }}
       >
-        <Outlet 
+        <Outlet
           context={{
-            currentWorkspace:workSpaces[currentWorkSpaceIndex] ,
+            currentWorkspace: workSpaces[currentWorkSpaceIndex],
             handleAddTask,
             handleAssetUpload,
             handleDeleteAsset,
             handleUpdateTask,
-            isWorkspaceAvailable: workSpaces.length > 0
+            isWorkspaceAvailable: workSpaces.length > 0,
           }}
-         />
+        />
       </div>
 
-
-
       {/* This hadles The rightBar */}
-      {(currentPath === '/user/workspace' || currentPath === '/user/assets') && (
+      {(currentPath === '/user/workspace' ||
+        currentPath === '/user/assets') && (
         <div
           className=" py-10 px-5 hidden xl:block w-72   flex-col"
           style={{ maxHeight: '100vh', overflow: 'hidden' }}
@@ -199,19 +213,23 @@ const AdminLayout = () => {
                 size={25}
                 color="#1C1D21"
                 className="float-right cursor-pointer"
-                onClick={()=>setIsModalOpen(true)}
+                onClick={() => setIsModalOpen(true)}
               />
             </div>
 
             <div className="mt-7">
-              {workSpaces.length===0 && 
-                <div className='text-gray-300 font-semibold text-lg text-center mt-28'>No Workspace yet</div>
-              }
-              {workSpaces.map((item:any, i:any) => (
-                <div 
-                  style={{background:currentWorkSpaceIndex===i?'#F2EEFB':''}} 
-                  onClick={()=>setCurrentWorkSpaceIndex(i)} 
-                  key={i} 
+              {workSpaces.length === 0 && (
+                <div className="text-gray-300 font-semibold text-lg text-center mt-28">
+                  No Workspace yet
+                </div>
+              )}
+              {workSpaces.map((item: any, i: any) => (
+                <div
+                  style={{
+                    background: currentWorkSpaceIndex === i ? '#F2EEFB' : '',
+                  }}
+                  onClick={() => setCurrentWorkSpaceIndex(i)}
+                  key={i}
                   className="flex  py-5 rounded-md cursor-pointer"
                 >
                   <div
@@ -229,42 +247,40 @@ const AdminLayout = () => {
                 </div>
               ))}
             </div>
-
-
           </div>
         </div>
       )}
 
+      <Modal open={isModalOpen}>
+        <ModalContent>
+          <AiOutlineClose
+            size={23}
+            className="float-right cursor-pointer"
+            onClick={() => setIsModalOpen(false)}
+          />
+          <div className="font-semibold text-2xl text-center mb-5">
+            New Workspace
+          </div>
+          <div className="mb-3">
+            <FormInput
+              label="Name"
+              name="name"
+              onChange={(e) => handleChange(e)}
+            />
+          </div>
+          <div className="mb-3">
+            <div className="mb-1 font-medum">Workspace description</div>
+            <TextArea
+              name="description"
+              rows={7}
+              onChange={(e: any) => handleChange(e)}
+            />
+          </div>
 
-
-        <Modal open={isModalOpen}>
-            
-            <ModalContent>
-              <AiOutlineClose 
-                size={23} 
-                className="float-right cursor-pointer" 
-                onClick={()=>setIsModalOpen(false)}
-              />
-              <div className="font-semibold text-2xl text-center mb-5">New Workspace</div>
-                <div className='mb-3'>
-                  <FormInput
-                      label='Name'
-                      name='name'
-                      onChange={(e)=>handleChange(e)}
-                  />
-                </div>
-               <div className='mb-3'>
-                  <div className="mb-1 font-medum">Workspace description</div>
-                  <TextArea 
-                    name='description' 
-                    rows={7}
-                    onChange={(e:any)=>handleChange(e)}
-                  />
-                </div>
-
-                
-                <AuthButton onClick={()=>createNewWorkspace()}>Create Workspace</AuthButton>
-            </ModalContent>
+          <AuthButton onClick={() => createNewWorkspace()}>
+            Create Workspace
+          </AuthButton>
+        </ModalContent>
       </Modal>
     </div>
   )
