@@ -97,11 +97,13 @@ const AdminLayout = () => {
     const workspaces_c = [...workSpaces]
     //@ts-ignore
     let newAssets = workspaces_c[currentWorkSpaceIndex].assets?.filter(
+      //@ts-ignore
       (item: any, i: any) => i !== index
     )
     workspaces_c[currentWorkSpaceIndex].assets = newAssets
     setWorkSpaces(workspaces_c)
     localStorage.setItem('workspaces', JSON.stringify(workspaces_c))
+    
   }
 
   const [formData, setFormData] = useState({
